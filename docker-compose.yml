@@ -1,0 +1,15 @@
+services:
+  backend:
+    build: ./asset-track-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      # Damit die Datenbank persistent bleibt
+      - ./asset-track-backend/instance:/app/instance
+
+  frontend:
+    build: ./asset-track-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
