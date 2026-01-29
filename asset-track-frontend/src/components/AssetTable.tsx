@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { FileIcon, Pencil, Trash2, History } from "lucide-react";
+import { formatLifecycle, formatType } from "@/lib/asset-labels";
 
 export interface Asset {
   id: number;
@@ -53,8 +54,8 @@ export function AssetTable({ assets, onEdit, onDelete, onHistory }: AssetTablePr
           assets.map((asset) => (
             <TableRow key={asset.id}>
               <TableCell className="font-medium">{asset.name}</TableCell>
-              <TableCell>{asset.type}</TableCell>
-              <TableCell>{asset.lifecycle}</TableCell>
+              <TableCell>{formatType(asset.type)}</TableCell>
+              <TableCell>{formatLifecycle(asset.lifecycle)}</TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {Object.entries(asset.custom_attributes || {}).map(([key, value]) => (
@@ -115,7 +116,6 @@ export function AssetTable({ assets, onEdit, onDelete, onHistory }: AssetTablePr
     </Table>
   );
 }
-
 
 
 

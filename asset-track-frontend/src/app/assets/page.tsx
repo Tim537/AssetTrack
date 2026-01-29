@@ -18,36 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-
-const LIFECYCLES = ["ALL", "Specification", "Acquisition", "Development", "Release", "Deployment", "Operation", "Retirement"];
-const LIFECYCLE_LABELS: Record<string, string> = {
-  "ALL": "Alle",
-  "Specification": "Spezifikation",
-  "Acquisition": "Beschaffung",
-  "Development": "Entwicklung",
-  "Release": "Freigabe",
-  "Deployment": "Bereitstellung",
-  "Operation": "Betrieb",
-  "Retirement": "Außerbetriebnahme"
-};
-
-const TYPES = ["ALL", "virtual IT Equipment", "Non-Executable Software", "Executable Software", "SourceCode", "Digital Information Content Assets", "ITAM Systems and Tools", "Metadata for IT Asset Management", "Physical Media", "Physical IT Equipment", "IT Asset Licenses", "IT Asset Contracts", "IT Asset Services", "Non-IT Assets"];
-const TYPE_LABELS: Record<string, string> = {
-  "ALL": "Alle",
-  "virtual IT Equipment": "Virtuelle IT-Ausrüstung",
-  "Non-Executable Software": "Nicht-ausführbare Software",
-  "Executable Software": "Ausführbare Software",
-  "SourceCode": "Quellcode",
-  "Digital Information Content Assets": "Digitale Informationsinhalte",
-  "ITAM Systems and Tools": "ITAM-Systeme und Werkzeuge",
-  "Metadata for IT Asset Management": "Metadaten für IT-Asset-Management",
-  "Physical Media": "Physische Medien",
-  "Physical IT Equipment": "Physische IT-Ausrüstung",
-  "IT Asset Licenses": "IT-Asset-Lizenzen",
-  "IT Asset Contracts": "IT-Asset-Verträge",
-  "IT Asset Services": "IT-Asset-Dienste",
-  "Non-IT Assets": "Nicht-IT-Assets"
-};
+import {
+  ASSET_LIFECYCLE_FILTER_VALUES,
+  ASSET_TYPE_FILTER_VALUES,
+  formatLifecycle,
+  formatType,
+} from "@/lib/asset-labels";
 
 export default function AssetsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -61,8 +37,8 @@ export default function AssetsPage() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyAsset, setHistoryAsset] = useState<Asset | null>(null);
 
-  const [filterLifecycle, setFilterLifecycle] = useState("ALL");
-  const [filterType, setFilterType] = useState("ALL");
+  const [filterLifecycle, setFilterLifecycle] = useState<string>("ALL");
+  const [filterType, setFilterType] = useState<string>("ALL");
 
   const fetchAssets = useCallback(async () => {
     if (!activeOrganization) {
@@ -215,7 +191,11 @@ export default function AssetsPage() {
                     <SelectValue placeholder="Nach Lebenszyklus filtern" />
                   </SelectTrigger>
                   <SelectContent>
-                    {LIFECYCLES.map(l => <SelectItem key={l} value={l}>{LIFECYCLE_LABELS[l] || l}</SelectItem>)}
+                     {ASSET_LIFECYCLE_FILTER_VALUES.map((l) => (
+                       <SelectItem key={l} value={l}>
+                         {formatLifecycle(l)}
+                       </SelectItem>
+                     ))}
                   </SelectContent>
                 </Select>
              </div>
@@ -227,7 +207,11 @@ export default function AssetsPage() {
                     <SelectValue placeholder="Nach Typ filtern" />
                   </SelectTrigger>
                   <SelectContent>
-                    {TYPES.map(t => <SelectItem key={t} value={t}>{TYPE_LABELS[t] || t}</SelectItem>)}
+                     {ASSET_TYPE_FILTER_VALUES.map((t) => (
+                       <SelectItem key={t} value={t}>
+                         {formatType(t)}
+                       </SelectItem>
+                     ))}
                   </SelectContent>
                 </Select>
              </div>
@@ -264,4 +248,3 @@ export default function AssetsPage() {
     </div>
   );
 }
-

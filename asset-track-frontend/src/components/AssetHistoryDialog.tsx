@@ -10,6 +10,7 @@ import { Loader2, Circle, CheckCircle2, AlertCircle, Trash2, FileUp, FileX2, Edi
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { formatLifecycle, formatType } from "@/lib/asset-labels";
 
 interface AssetHistoryDialogProps {
   open: boolean;
@@ -87,10 +88,17 @@ const HistoryItem = ({ log, isLast }: { log: AssetLog; isLast: boolean }) => {
                       }
                       if (['id', 'organization_id'].includes(key)) return null;
 
+                      const displayValue =
+                        key === "type"
+                          ? formatType(String(value))
+                          : key === "lifecycle"
+                            ? formatLifecycle(String(value))
+                            : String(value);
+
                       return (
                           <div key={key} className="text-sm flex gap-2">
                               <span className="font-bold text-muted-foreground capitalize shrink-0">{key.replace('_', ' ')}:</span> 
-                              <span className="text-foreground break-all">{String(value)}</span>
+                              <span className="text-foreground break-all">{displayValue}</span>
                           </div>
                       )
                   })}

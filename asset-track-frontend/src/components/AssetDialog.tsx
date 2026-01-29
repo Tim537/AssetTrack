@@ -20,6 +20,12 @@ import { Asset } from "./AssetTable";
 import { Plus, Trash2, Download, FileIcon, Loader2 } from "lucide-react";
 import { getAssetAttachments, deleteAssetAttachment, getDownloadAttachmentUrl } from "@/lib/api";
 import { toast } from "sonner";
+import {
+  ASSET_LIFECYCLES,
+  ASSET_TYPES,
+  formatLifecycle,
+  formatType,
+} from "@/lib/asset-labels";
 
 interface AssetDialogProps {
   open: boolean;
@@ -29,55 +35,6 @@ interface AssetDialogProps {
   onAttachmentChange?: () => void;
 }
 
-const LIFECYCLES = [
-  "Specification",
-  "Acquisition",
-  "Development",
-  "Release",
-  "Deployment",
-  "Operation",
-  "Retirement",
-];
-const LIFECYCLE_LABELS: Record<string, string> = {
-  "Specification": "Spezifikation",
-  "Acquisition": "Beschaffung",
-  "Development": "Entwicklung",
-  "Release": "Freigabe",
-  "Deployment": "Bereitstellung",
-  "Operation": "Betrieb",
-  "Retirement": "Außerbetriebnahme"
-};
-
-const TYPES = [
-  "virtual IT Equipment",
-  "Non-Executable Software",
-  "Executable Software",
-  "SourceCode",
-  "Digital Information Content Assets",
-  "ITAM Systems and Tools",
-  "Metadata for IT Asset Management",
-  "Physical Media",
-  "Physical IT Equipment",
-  "IT Asset Licenses",
-  "IT Asset Contracts",
-  "IT Asset Services",
-  "Non-IT Assets",
-];
-const TYPE_LABELS: Record<string, string> = {
-  "virtual IT Equipment": "Virtuelle IT-Ausrüstung",
-  "Non-Executable Software": "Nicht-ausführbare Software",
-  "Executable Software": "Ausführbare Software",
-  "SourceCode": "Quellcode",
-  "Digital Information Content Assets": "Digitale Informationsinhalte",
-  "ITAM Systems and Tools": "ITAM-Systeme und Werkzeuge",
-  "Metadata for IT Asset Management": "Metadaten für IT-Asset-Management",
-  "Physical Media": "Physische Medien",
-  "Physical IT Equipment": "Physische IT-Ausrüstung",
-  "IT Asset Licenses": "IT-Asset-Lizenzen",
-  "IT Asset Contracts": "IT-Asset-Verträge",
-  "IT Asset Services": "IT-Asset-Dienste",
-  "Non-IT Assets": "Nicht-IT-Assets"
-};
 
 export function AssetDialog({
   open,
@@ -87,8 +44,8 @@ export function AssetDialog({
   onAttachmentChange,
 }: AssetDialogProps) {
   const [name, setName] = useState("");
-  const [lifecycle, setLifecycle] = useState(LIFECYCLES[0]);
-  const [type, setType] = useState(TYPES[0]);
+  const [lifecycle, setLifecycle] = useState<string>(ASSET_LIFECYCLES[0]);
+  const [type, setType] = useState<string>(ASSET_TYPES[0]);
   const [attributes, setAttributes] = useState<{ id: string; key: string; value: string }[]>([]);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
@@ -118,8 +75,8 @@ export function AssetDialog({
       }
     } else {
       setName("");
-      setLifecycle(LIFECYCLES[0]);
-      setType(TYPES[0]);
+      setLifecycle(ASSET_LIFECYCLES[0]);
+      setType(ASSET_TYPES[0]);
       setAttributes([]);
       setAttachments([]);
     }
@@ -222,9 +179,9 @@ export function AssetDialog({
                 <SelectValue placeholder="Typ auswählen" />
               </SelectTrigger>
               <SelectContent>
-                {TYPES.map((t) => (
+                {ASSET_TYPES.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {TYPE_LABELS[t] || t}
+                    {formatType(t)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -237,9 +194,9 @@ export function AssetDialog({
                 <SelectValue placeholder="Lebenszyklus auswählen" />
               </SelectTrigger>
               <SelectContent>
-                {LIFECYCLES.map((l) => (
+                {ASSET_LIFECYCLES.map((l) => (
                   <SelectItem key={l} value={l}>
-                    {LIFECYCLE_LABELS[l] || l}
+                    {formatLifecycle(l)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -355,7 +312,5 @@ export function AssetDialog({
     </Dialog>
   );
 }
-
-
 
 
