@@ -2,6 +2,8 @@
 /asset-track-backend/__pycache__/
 /asset-track-backend/*/__pycache__/
 /asset-track-backend/venv/
-# Instance folders mit Datenbanken
+
 /instance/
 /asset-track-backend/instance/
+
+node_modules/
