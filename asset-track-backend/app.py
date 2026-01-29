@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 from db import db
@@ -9,7 +11,10 @@ from datetime import timedelta
 from pathlib import Path
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
+cors_origins_raw = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+cors_origins = [o.strip() for o in cors_origins_raw.split(",") if o.strip()]
+CORS(app, resources={r"/api/*": {"origins": cors_origins}})
 
 instance_path = Path(__file__).parent / 'instance'
 instance_path.mkdir(exist_ok=True)
@@ -18,7 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{instance_path / "assettrack
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-app.config['JWT_SECRET_KEY'] = 'super-secret-dev-key-change-this' 
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'dev-only-change-me')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
 app.config['JWT_TOKEN_LOCATION'] = ['headers', 'query_string']
 app.config['JWT_QUERY_STRING_NAME'] = 'token'
@@ -34,7 +39,11 @@ app.register_blueprint(asset_bp, url_prefix='/api')
 def health():
     return jsonify({"status": "ok"}), 200
 
+
+# Ensure tables exist when running under gunicorn.
+with app.app_context():
+    db.create_all()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    debug = os.getenv("FLASK_DEBUG", "0") in ("1", "true", "True")
+    app.run(debug=debug, port=5000, host='0.0.0.0')

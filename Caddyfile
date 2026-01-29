@@ -1,0 +1,9 @@
+assettrack.gruen-ist-bund.de {
+  encode gzip
+  reverse_proxy frontend:3000
+}
+
+api.assettrack.gruen-ist-bund.de {
+  encode gzip
+  reverse_proxy backend:5000
+}

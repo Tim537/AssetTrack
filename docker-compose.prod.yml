@@ -1,0 +1,37 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+
+  backend:
+    build: ./asset-track-backend
+    restart: unless-stopped
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - FLASK_DEBUG=0
+    volumes:
+      - ./asset-track-backend/instance:/app/instance
+
+  frontend:
+    build:
+      context: ./asset-track-frontend
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+volumes:
+  caddy_data:
+  caddy_config:
